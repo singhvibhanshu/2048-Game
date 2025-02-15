@@ -1,29 +1,32 @@
-import pygame, random, math
+import pygame
+import random
+import math
 
 pygame.init()
 
 FPS = 60
 
-HEIGHT, WIDTH = 800, 800
+WIDTH, HEIGHT = 800, 800
 ROWS = 4
 COLS = 4
 
 RECT_HEIGHT = HEIGHT // ROWS
 RECT_WIDTH = WIDTH // COLS
 
-OUTLINE_COLOUR = (187, 173, 160)
+OUTLINE_COLOR = (187, 173, 160)
 OUTLINE_THICKNESS = 10
-BACKGROUND_COLOUR = (205, 192, 180)
-FONT_COLOUR = (119, 110, 101)
+BACKGROUND_COLOR = (205, 192, 180)
+FONT_COLOR = (119, 110, 101)
 
 FONT = pygame.font.SysFont("comicsans", 60, bold=True)
 MOVE_VEL = 20
 
-WINDOW = pygame.display.set_mode((HEIGHT, WIDTH))
+WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("2048")
 
+
 class Tile:
-    COLOURS = [
+    COLORS = [
         (237, 229, 218),
         (238, 225, 201),
         (243, 178, 122),
@@ -32,7 +35,7 @@ class Tile:
         (247, 95, 59),
         (237, 208, 115),
         (237, 204, 99),
-        (236, 80, 202),
+        (236, 202, 80),
     ]
 
     def __init__(self, value, row, col):
@@ -42,16 +45,16 @@ class Tile:
         self.x = col * RECT_WIDTH
         self.y = row * RECT_HEIGHT
 
-    def get_colour(self):
-        colour_index = int(math.log2(self.value)) - 1
-        colour = self.COLOURS[colour_index]
-        return colour
+    def get_color(self):
+        color_index = int(math.log2(self.value)) - 1
+        color = self.COLORS[color_index]
+        return color
 
     def draw(self, window):
-        colour = self.get_colour()
-        pygame.draw.rect(window, colour, (self.x, self.y, RECT_HEIGHT, RECT_WIDTH))
+        color = self.get_color()
+        pygame.draw.rect(window, color, (self.x, self.y, RECT_WIDTH, RECT_HEIGHT))
 
-        text = FONT.render(str(self.value), 1, FONT_COLOUR)
+        text = FONT.render(str(self.value), 1, FONT_COLOR)
         window.blit(
             text,
             (
@@ -59,12 +62,8 @@ class Tile:
                 self.y + (RECT_HEIGHT / 2 - text.get_height() / 2),
             ),
         )
-        
-    def move(self, delta):
-        self.x += delta[0]
-        self.y += delta[1]
 
-    def set_pos(self, ceil = False):
+    def set_pos(self, ceil=False):
         if ceil:
             self.row = math.ceil(self.y / RECT_HEIGHT)
             self.col = math.ceil(self.x / RECT_WIDTH)
@@ -72,21 +71,25 @@ class Tile:
             self.row = math.floor(self.y / RECT_HEIGHT)
             self.col = math.floor(self.x / RECT_WIDTH)
 
+    def move(self, delta):
+        self.x += delta[0]
+        self.y += delta[1]
 
 
 def draw_grid(window):
     for row in range(1, ROWS):
         y = row * RECT_HEIGHT
-        pygame.draw.line(window, OUTLINE_COLOUR, (0, y), (WIDTH, y), OUTLINE_THICKNESS)
+        pygame.draw.line(window, OUTLINE_COLOR, (0, y), (WIDTH, y), OUTLINE_THICKNESS)
 
     for col in range(1, COLS):
         x = col * RECT_WIDTH
-        pygame.draw.line(window, OUTLINE_COLOUR, (x, 0), (x, HEIGHT), OUTLINE_THICKNESS)
+        pygame.draw.line(window, OUTLINE_COLOR, (x, 0), (x, HEIGHT), OUTLINE_THICKNESS)
 
-    pygame.draw.rect(window, OUTLINE_COLOUR, (0, 0, HEIGHT, WIDTH), OUTLINE_THICKNESS)
+    pygame.draw.rect(window, OUTLINE_COLOR, (0, 0, WIDTH, HEIGHT), OUTLINE_THICKNESS)
+
 
 def draw(window, tiles):
-    window.fill(BACKGROUND_COLOUR)
+    window.fill(BACKGROUND_COLOR)
 
     for tile in tiles.values():
         tile.draw(window)
@@ -95,18 +98,19 @@ def draw(window, tiles):
 
     pygame.display.update()
 
-def get_random_pos(tiles):
-    col = None
-    row = None
 
+def get_random_pos(tiles):
+    row = None
+    col = None
     while True:
-        col = random.randrange(0, COLS)
         row = random.randrange(0, ROWS)
+        col = random.randrange(0, COLS)
 
         if f"{row}{col}" not in tiles:
             break
 
     return row, col
+
 
 def move_tiles(window, tiles, clock, direction):
     updated = True
@@ -155,7 +159,7 @@ def move_tiles(window, tiles, clock, direction):
         move_check = (
             lambda tile, next_tile: tile.y + RECT_HEIGHT + MOVE_VEL < next_tile.y
         )
-        ceil = True
+        ceil = False
 
     while updated:
         clock.tick(FPS)
@@ -169,7 +173,11 @@ def move_tiles(window, tiles, clock, direction):
             next_tile = get_next_tile(tile)
             if not next_tile:
                 tile.move(delta)
-            elif (tile.value == next_tile.value and tile not in blocks and next_tile not in blocks):
+            elif (
+                tile.value == next_tile.value
+                and tile not in blocks
+                and next_tile not in blocks
+            ):
                 if merge_check(tile, next_tile):
                     tile.move(delta)
                 else:
@@ -188,10 +196,11 @@ def move_tiles(window, tiles, clock, direction):
 
     return end_move(tiles)
 
+
 def end_move(tiles):
     if len(tiles) == 16:
         return "lost"
-    
+
     row, col = get_random_pos(tiles)
     tiles[f"{row}{col}"] = Tile(random.choice([2, 4]), row, col)
     return "continue"
@@ -204,6 +213,7 @@ def update_tiles(window, tiles, sorted_tiles):
 
     draw(window, tiles)
 
+
 def generate_tiles():
     tiles = {}
     for _ in range(2):
@@ -211,6 +221,7 @@ def generate_tiles():
         tiles[f"{row}{col}"] = Tile(2, row, col)
 
     return tiles
+
 
 def main(window):
     clock = pygame.time.Clock()
@@ -239,6 +250,7 @@ def main(window):
         draw(window, tiles)
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main(WINDOW)
