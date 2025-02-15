@@ -100,6 +100,8 @@ def get_random_pos(tiles):
         if f"{row}{col}" not in tiles:
             break
 
+    return row, col
+
 def generate_tiles():
     tiles = {}
     for _ in range(2):
@@ -112,7 +114,7 @@ def main(window):
     clock = pygame.time.Clock()
     run = True
 
-    tiles = {}
+    tiles = generate_tiles()
 
     while run:
         clock.tick(FPS)
