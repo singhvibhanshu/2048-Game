@@ -42,6 +42,22 @@ class Tile:
         self.x = col * RECT_WIDTH
         self.y = row * RECT_HEIGHT
 
+    def get_colour(self):
+        colour_index = int(math.log2(self.value)) - 1
+        colour = self.COLOURS[colour_index]
+        return colour
+
+    def draw(self, window):
+        
+
+    def move(self, delta):
+        pass
+
+    def set_pos(self):
+        pass
+
+
+
 def draw_grid(window):
     for row in range(1, ROWS):
         y = row * RECT_HEIGHT
