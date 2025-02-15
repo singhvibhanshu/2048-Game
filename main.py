@@ -48,8 +48,18 @@ class Tile:
         return colour
 
     def draw(self, window):
-        
+        colour = self.get_colour()
+        pygame.draw.rect(window, colour, (self.x, self.y, RECT_HEIGHT, RECT_WIDTH))
 
+        text = FONT.render(str(self.value), 1, FONT_COLOUR)
+        window.blit(
+            text,
+            (
+                self.x + (RECT_WIDTH / 2 - text.get_width() / 2),
+                self.y + (RECT_HEIGHT / 2 - text.get_height() / 2),
+            ),
+        )
+        
     def move(self, delta):
         pass
 
