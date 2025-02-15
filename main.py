@@ -23,6 +23,10 @@ WINDOW = pygame.display.set_mode((HEIGHT, WIDTH))
 pygame.display.set_caption("2048")
 
 def draw_grid(window):
+    for row in range(1, ROWS):
+        y = row * RECT_HEIGHT
+        pygame.draw.line(window, OUTLINE_COLOUR, (0, y), (WIDTH, y))
+
     pygame.draw.rect(window, OUTLINE_COLOUR, (0, 0, HEIGHT, WIDTH), OUTLINE_THICKNESS)
 
 def draw(window):
