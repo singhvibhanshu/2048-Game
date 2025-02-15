@@ -22,8 +22,14 @@ MOVE_VEL = 20
 WINDOW = pygame.display.set_mode((HEIGHT, WIDTH))
 pygame.display.set_caption("2048")
 
+def draw_grid(window):
+    pygame.draw.rect(window, OUTLINE_COLOUR, (0, 0, HEIGHT, WIDTH), OUTLINE_THICKNESS)
+
 def draw(window):
     window.fill(BACKGROUND_COLOUR)
+
+    draw_grid(window)
+
     pygame.display.update()
 
 def main(window):
