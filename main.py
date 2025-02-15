@@ -16,8 +16,8 @@ OUTLINE_THICKNESS = 10
 BACKGROUND_COLOUR = (205, 192, 180)
 FONT_COLOUR = (119, 110, 101)
 
-WINDOW = pygame.display.set_mode((HEIGHT, WIDTH))
-pygame.display.set_caption("2048")
-
 FONT = pygame.font.SysFont("comicsans", 60, bold=True)
 MOVE_VEL = 20
+
+WINDOW = pygame.display.set_mode((HEIGHT, WIDTH))
+pygame.display.set_caption("2048")
