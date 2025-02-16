@@ -19,11 +19,13 @@ BACKGROUND_COLOR = (205, 192, 180)
 FONT_COLOR = (119, 110, 101)
 
 FONT = pygame.font.SysFont("comicsans", 60, bold=True)
+SMALL_FONT = pygame.font.SysFont("comicsans", 30, bold=True)  # For UI elements
 MOVE_VEL = 20
 
 WINDOW = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("2048")
 
+score = 0  # Global score tracker
 
 class Tile:
     COLORS = [
@@ -95,7 +97,18 @@ def draw(window, tiles):
         tile.draw(window)
 
     draw_grid(window)
-
+    
+    # Draw score tracker (top-left)
+    score_text = SMALL_FONT.render("Score: " + str(score), True, FONT_COLOR)
+    window.blit(score_text, (10, 10))
+    
+    # Draw restart button (top-right)
+    restart_button_rect = pygame.Rect(WIDTH - 160, 10, 150, 50)
+    pygame.draw.rect(window, OUTLINE_COLOR, restart_button_rect)
+    restart_text = SMALL_FONT.render("Restart", True, FONT_COLOR)
+    restart_text_rect = restart_text.get_rect(center=restart_button_rect.center)
+    window.blit(restart_text, restart_text_rect)
+    
     pygame.display.update()
 
 
@@ -113,6 +126,7 @@ def get_random_pos(tiles):
 
 
 def move_tiles(window, tiles, clock, direction):
+    global score
     updated = True
     blocks = set()
 
@@ -182,6 +196,7 @@ def move_tiles(window, tiles, clock, direction):
                     tile.move(delta)
                 else:
                     next_tile.value *= 2
+                    score += next_tile.value  # Update score when merging
                     sorted_tiles.pop(i)
                     blocks.add(next_tile)
             elif move_check(tile, next_tile):
@@ -198,9 +213,9 @@ def move_tiles(window, tiles, clock, direction):
 
 
 def end_move(tiles):
+    # If the board is full, no new tile can be added: game over.
     if len(tiles) == 16:
         return "lost"
-
     row, col = get_random_pos(tiles)
     tiles[f"{row}{col}"] = Tile(random.choice([2, 4]), row, col)
     return "continue"
@@ -223,7 +238,31 @@ def generate_tiles():
     return tiles
 
 
+def game_over(window, score):
+    # Display Game Over screen with final score
+    window.fill(BACKGROUND_COLOR)
+    game_over_text = FONT.render("Game Over!", True, FONT_COLOR)
+    score_text = SMALL_FONT.render("Final Score: " + str(score), True, FONT_COLOR)
+    window.blit(
+        game_over_text,
+        (
+            WIDTH // 2 - game_over_text.get_width() // 2,
+            HEIGHT // 2 - game_over_text.get_height() // 2 - 30,
+        ),
+    )
+    window.blit(
+        score_text,
+        (
+            WIDTH // 2 - score_text.get_width() // 2,
+            HEIGHT // 2 - score_text.get_height() // 2 + 30,
+        ),
+    )
+    pygame.display.update()
+    pygame.time.delay(3000)
+
+
 def main(window):
+    global score
     clock = pygame.time.Clock()
     run = True
 
@@ -237,15 +276,26 @@ def main(window):
                 run = False
                 break
 
+            # Handle mouse click for the restart button
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if pygame.Rect(WIDTH - 160, 10, 150, 50).collidepoint(event.pos):
+                    tiles = generate_tiles()
+                    score = 0
+
             if event.type == pygame.KEYDOWN:
+                result = None
                 if event.key == pygame.K_LEFT:
-                    move_tiles(window, tiles, clock, "left")
-                if event.key == pygame.K_RIGHT:
-                    move_tiles(window, tiles, clock, "right")
-                if event.key == pygame.K_UP:
-                    move_tiles(window, tiles, clock, "up")
-                if event.key == pygame.K_DOWN:
-                    move_tiles(window, tiles, clock, "down")
+                    result = move_tiles(window, tiles, clock, "left")
+                elif event.key == pygame.K_RIGHT:
+                    result = move_tiles(window, tiles, clock, "right")
+                elif event.key == pygame.K_UP:
+                    result = move_tiles(window, tiles, clock, "up")
+                elif event.key == pygame.K_DOWN:
+                    result = move_tiles(window, tiles, clock, "down")
+
+                if result == "lost":
+                    game_over(window, score)
+                    run = False
 
         draw(window, tiles)
 
