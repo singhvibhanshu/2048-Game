@@ -38,11 +38,3 @@ A Python implementation of the classic 2048 game using Pygame.
    - ⬅️ Left
    - ➡️ Right
 3. Try to reach the **2048** tile!
-
-## 📸 Screenshots
-(You can add game screenshots here)
-
-## 📝 To-Do List
-- [ ] Improve tile animations
-- [ ] Add a restart button
-- [ ] Implement a score tracker
