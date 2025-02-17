@@ -44,12 +44,3 @@ A Python implementation of the classic 2048 game using Pygame.
    - ➡️ Right
 
 3. Try to reach the 2048 tile!
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Inspired by [Gabriele Cirulli's 2048](https://github.com/gabrielecirulli/2048).
-
